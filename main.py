@@ -15,11 +15,15 @@
 
 #importing libraries
 import medmnist
+import numpy as np
 #print("successfully installed madmnist, version:", medmnist.__version__)
 
 #importing training, validating and testing data seperately
-from medmnist import PneumoniaMNIST
-dataset_train1 = PneumoniaMNIST(split="train", download=True)
-dataset_val1 = PneumoniaMNIST(split="val", download=True)
-dataset_test1 = PneumoniaMNIST(split="test", download=True)
-print(dataset_val1)
+data = np.load('Dataset/pneumoniamnist.npz')
+data_train = data['train_images']
+print(len(data_train))
+# from medmnist import PneumoniaMNIST
+# dataset_train1 = PneumoniaMNIST(split="train", download=True)
+# dataset_val1 = PneumoniaMNIST(split="val", download=True)
+# dataset_test1 = PneumoniaMNIST(split="test", download=True)
+# print(dataset_val1)
