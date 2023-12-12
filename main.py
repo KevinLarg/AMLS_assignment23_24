@@ -6,7 +6,20 @@
 
 # Environment: Python 3.12.0
 
-# Library installed (as the order to be used): 
+# Library installed (as the order to be used): medmnist
+
+# Datasets for both tasks, for task A and for task B respectively, are installed by
+# %pip install --upgrade git+https://github.com/MedMNIST/MedMNIST.git
 
 # Task A
 
+#importing libraries
+import medmnist
+#print("successfully installed madmnist, version:", medmnist.__version__)
+
+#importing training, validating and testing data seperately
+from medmnist import PneumoniaMNIST
+dataset_train1 = PneumoniaMNIST(split="train", download=True)
+dataset_val1 = PneumoniaMNIST(split="val", download=True)
+dataset_test1 = PneumoniaMNIST(split="test", download=True)
+print(dataset_val1)
