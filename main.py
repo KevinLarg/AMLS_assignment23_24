@@ -6,7 +6,7 @@
 
 # Environment: Python 3.12.0
 
-# Library installed (as the order to be used): medmnist
+# Library installed (as the order to be used): medmnist, numpy,
 
 # Datasets for both tasks, for task A and for task B respectively, are installed by
 # %pip install --upgrade git+https://github.com/MedMNIST/MedMNIST.git
@@ -21,7 +21,15 @@ import numpy as np
 #importing training, validating and testing data seperately
 data = np.load('Dataset/pneumoniamnist.npz')
 data_train = data['train_images']
-print(len(data_train))
+data_train = data['train_images']
+data_test = data['test_images']
+data_val = data['val_images']
+label_train = data['train_labels']
+label_test = data['test_labels']
+label_val = data['val_labels']
+print(len(data_val))
+
+# Another way to load the exact same data 
 # from medmnist import PneumoniaMNIST
 # dataset_train1 = PneumoniaMNIST(split="train", download=True)
 # dataset_val1 = PneumoniaMNIST(split="val", download=True)
