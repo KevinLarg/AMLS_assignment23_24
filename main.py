@@ -16,22 +16,101 @@
 #importing libraries
 import medmnist
 import numpy as np
+import pandas as pd
 #print("successfully installed madmnist, version:", medmnist.__version__)
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn import svm
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import cross_val_score
+import matplotlib.pyplot as plt
 
-#importing training, validating and testing data seperately
-data = np.load('Dataset/pneumoniamnist.npz')
-data_train = data['train_images']
-data_train = data['train_images']
-data_test = data['test_images']
-data_val = data['val_images']
-label_train = data['train_labels']
-label_test = data['test_labels']
-label_val = data['val_labels']
-print(len(data_val))
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
 
-# Another way to load the exact same data 
-# from medmnist import PneumoniaMNIST
-# dataset_train1 = PneumoniaMNIST(split="train", download=True)
-# dataset_val1 = PneumoniaMNIST(split="val", download=True)
-# dataset_test1 = PneumoniaMNIST(split="test", download=True)
-# print(dataset_val1)
+import tensorflow as tf
+import tensorflow.keras as Keras
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import layers, models
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.models import load_model
+
+import warnings
+
+def load_data(datapath):
+    """
+    importing training, validating and testing data seperately
+    """
+    try:
+        data = np.load(datapath)
+    except:
+        print("loading data failed, please check the file path provided")
+    data_train = data['train_images']
+    data_test = data['test_images']
+    data_val = data['val_images']
+    label_train = data['train_labels']
+    label_test = data['test_labels']
+    label_val = data['val_labels']
+    return data_train,label_train,data_val,label_val,data_test,label_test
+
+def flatten_data(data):
+    """
+    flattening the data for some ml models
+    (task A)
+    """
+    n_samples = len(data)
+    data_temp = data.reshape((n_samples, -1))
+    data_tr = StandardScaler().fit_transform(data_temp)
+    return data_tr
+
+def SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test):
+    # Initialize an empty dictionary to store results
+    accuracy_results = {'kernel': [], 'C': [], 'accu': [], 'valscore': []}
+
+    for i in kernels:
+        for c in C:
+            # Create an SVM classifier
+            clf_svm = SVC(kernel= i , C = c)
+
+            # Train the classifier
+            clf_svm.fit(data_tr, label_train)
+
+            # Make predictions on the test set
+            y_pred = clf_svm.predict(data_te)
+
+            val_scores = cross_val_score(clf_svm, data_va, label_val, cv=5)
+
+            # Evaluate the performance
+            accu_svm = accuracy_score(label_test, y_pred)
+
+            # storing performance values for plotting
+            accuracy_results['kernel'].append(i)
+            accuracy_results['C'].append(c)
+            accuracy_results['accu'].append(accu_svm)
+            accuracy_results['valscore'].append(val_scores.mean())
+
+    return accuracy_results
+
+# To ignore all warnings
+warnings.filterwarnings("ignore")
+
+# Task A
+# Loading data 
+data_train,label_train,data_val,label_val,data_test,label_test = load_data('Dataset/pneumoniamnist.npz')
+
+# Preprocessing data
+data_tr = flatten_data(data_train)
+data_va = flatten_data(data_val)
+data_te = flatten_data(data_test)
+
+# showing SVM models and plot results
+# Tried kernals and regularization parameters
+kernels = {'linear', 'rbf', 'poly','sigmoid'}
+C = {0.1,1,10,100}
+
+accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
+#print(f'Task A SVM results: {accuracy_results}')
