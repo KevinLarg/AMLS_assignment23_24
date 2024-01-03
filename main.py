@@ -67,6 +67,15 @@ def flatten_data(data):
     data_tr = StandardScaler().fit_transform(data_temp)
     return data_tr
 
+def reshape_data(data):
+    """
+    reshaping data so that it gets the forth dimension 
+    i.e. number of channels
+    """
+    inshape = (28, 28, 1)  # image length, width and channels, which is 28,28,1 in task A
+    train_reshaped = np.reshape(data, (data.shape[0],) + inshape)
+    return train_reshaped
+
 def SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test):
     # Initialize an empty dictionary to store results
     accuracy_results = {'kernel': [], 'C': [], 'accu': [], 'valscore': []}
@@ -95,8 +104,55 @@ def SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_t
 
     return accuracy_results
 
+def load_trained_model(datapath):
+    try:
+        model_reload = load_model(filepath= datapath)
+        print('Loading model; Success')
+    except:
+        print('Saving model failed')
+    return model_reload
+
+def cnn_evaluate(CNN_A,test_reshaped, label_test):
+    """
+    showing cnn test accuracy and confusion matrix
+    """
+    result_cnn = np.round(CNN_A.predict(test_reshaped),0)
+    print("Convolutional Neural Network CNN results\nConfusion Matrix:")
+    print(confusion_matrix(label_test, result_cnn))
+    test_loss, test_accuracy = CNN_A.evaluate(test_reshaped, label_test)
+    print(f"test accuracy is now {test_accuracy} with a loss of {test_loss}")
+    return 
+
+def rf_model(data_tr,label_train,data_va,label_val,data_te,label_test,random_seed):
+    # Create a Random Forest model
+    rf_modela = RandomForestClassifier(n_estimators=100, random_state=random_seed)
+
+    # Train the model
+    rf_modela.fit(data_tr, label_train)
+
+    # Perform cross-validation
+    cv_scores = cross_val_score(rf_modela, data_va, label_val, cv=5)  
+    print("Random Foresr RF results:\nMean Cross-Validation Score:", cv_scores.mean())
+
+    # Make predictions on the test set
+    y_pred = rf_modela.predict(data_te)
+
+    # Evaluate the model
+    accu_rf = accuracy_score(label_test, y_pred)
+    print("Test Accuracy:", accu_rf)
+
+    # Display classification report and confusion matrix
+    print("\nClassification Report:")
+    print(classification_report(label_test, y_pred))
+
+    print("\nConfusion Matrix:")
+    print(confusion_matrix(label_test, y_pred))
+
+    return
+
 # To ignore all warnings
 warnings.filterwarnings("ignore")
+random_seed = 42
 
 # Task A
 # Loading data 
@@ -107,10 +163,32 @@ data_tr = flatten_data(data_train)
 data_va = flatten_data(data_val)
 data_te = flatten_data(data_test)
 
-# showing SVM models and plot results
+train_reshaped = reshape_data(data_train)
+val_reshaped = reshape_data(data_val)
+test_reshaped = reshape_data(data_test)
+
+# showing SVM models and results
 # Tried kernals and regularization parameters
 kernels = {'linear', 'rbf', 'poly','sigmoid'}
 C = {0.1,1,10,100}
 
 accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
 #print(f'Task A SVM results: {accuracy_results}')
+
+# Loading CNN model and show results
+cnn_reload = load_model('A/my_saved_model')
+
+cnn_evaluate(cnn_reload, test_reshaped, label_test)
+
+# showing RF models and results
+rf_model(data_tr,label_train,data_va,label_val,data_te,label_test, random_seed= random_seed)
+
+
+
+
+
+
+
+# Task B
+# Loading data 
+data_train,label_train,data_val,label_val,data_test,label_test = load_data('Dataset/pathmnist.npz')
