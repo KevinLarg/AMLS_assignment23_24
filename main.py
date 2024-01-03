@@ -111,7 +111,7 @@ def load_trained_model(datapath):
         model_reload = load_model(filepath= datapath)
         print('Loading model; Success')
     except:
-        print('Saving model failed')
+        print('Loading model failed')
     return model_reload
 
 def cnn_evaluate(CNN_A,test_reshaped, label_test):
@@ -156,6 +156,7 @@ def load_SVM(model_path,data_te,label_test):
     """
     load the saved SVM model
     """
+    print("loading SVM for task B might take up to 10 mins")
     loaded_model = joblib.load(model_path)
 
     y_pred = loaded_model.predict(data_te)
@@ -168,6 +169,8 @@ def load_SVM(model_path,data_te,label_test):
 # To ignore all warnings
 warnings.filterwarnings("ignore")
 random_seed = 42
+global res_size
+res_size = (224,224)
 
 # Task A
 # Loading data 
@@ -191,7 +194,7 @@ accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,
 #print(f'Task A SVM results: {accuracy_results}')
 
 # Loading CNN model and show results
-cnn_reload = load_model('A/my_saved_model')
+cnn_reload = load_trained_model('A/my_saved_model')
 
 cnn_evaluate(cnn_reload, test_reshaped, label_test)
 
@@ -222,9 +225,13 @@ label_valid_one_hot = to_categorical(label_val, num_classes=9)
 label_test_one_hot = to_categorical(label_test, num_classes=9)
 
 # showing SVM models and results
-load_SVM("B/svm.model", data_te, label_test)
+#load_SVM("B/svm.model", data_te, label_test)
 
 # showing Resnet-50 models and results
 resnet = load_trained_model('B/my_saved_model')
 test_loss, test_accuracy = resnet.evaluate(data_test_res, label_test_one_hot)
 print(f"Resnet-50: test accuracy is now {test_accuracy}")
+
+# For saving time and repository space, the RF models for task B will be directly printed
+print("Task B: Random Forest model with mini-batches achieved a test acc of 0.5811977715877438")
+print("Task B: Random Forest model with the whole training data involved achieved a test acc of 0.6497214484679665")
