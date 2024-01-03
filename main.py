@@ -38,8 +38,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import layers, models
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import load_model
+from tensorflow.keras.utils import to_categorical
 
 import warnings
+import joblib
 
 def load_data(datapath):
     """
@@ -150,6 +152,19 @@ def rf_model(data_tr,label_train,data_va,label_val,data_te,label_test,random_see
 
     return
 
+def load_SVM(model_path,data_te,label_test):
+    """
+    load the saved SVM model
+    """
+    loaded_model = joblib.load(model_path)
+
+    y_pred = loaded_model.predict(data_te)
+
+    accu_svm = accuracy_score(label_test, y_pred)
+    print("Task B\nSVM:")
+    print(classification_report(label_test, y_pred))
+    return
+
 # To ignore all warnings
 warnings.filterwarnings("ignore")
 random_seed = 42
@@ -192,3 +207,24 @@ rf_model(data_tr,label_train,data_va,label_val,data_te,label_test, random_seed= 
 # Task B
 # Loading data 
 data_train,label_train,data_val,label_val,data_test,label_test = load_data('Dataset/pathmnist.npz')
+
+# Preprocessing data
+data_tr = flatten_data(data_train)
+data_va = flatten_data(data_val)
+data_te = flatten_data(data_test)
+
+data_train_res = Keras.applications.resnet50.preprocess_input(data_train)
+data_valid_res = Keras.applications.resnet50.preprocess_input(data_val)
+data_test_res = Keras.applications.resnet50.preprocess_input(data_test)
+
+label_train_one_hot = to_categorical(label_train, num_classes=9)
+label_valid_one_hot = to_categorical(label_val, num_classes=9)
+label_test_one_hot = to_categorical(label_test, num_classes=9)
+
+# showing SVM models and results
+load_SVM("B/svm.model", data_te, label_test)
+
+# showing Resnet-50 models and results
+resnet = load_trained_model('B/my_saved_model')
+test_loss, test_accuracy = resnet.evaluate(data_test_res, label_test_one_hot)
+print(f"Resnet-50: test accuracy is now {test_accuracy}")
