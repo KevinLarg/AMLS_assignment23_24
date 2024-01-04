@@ -226,6 +226,23 @@ label_test_one_hot = to_categorical(label_test, num_classes=9)
 
 # showing SVM models and results
 #load_SVM("B/svm.model", data_te, label_test)
+print("""Report for SVM with rbf kernal and regularization parameter = 1:
+              precision    recall  f1-score   support
+
+           0       0.94      0.91      0.93      1338
+           1       0.89      1.00      0.94       847
+           2       0.36      0.65      0.46       339
+           3       0.58      0.29      0.38       634
+           4       0.94      0.66      0.77      1035
+           5       0.45      0.48      0.47       592
+           6       0.32      0.18      0.23       741
+           7       0.68      0.40      0.50       421
+           8       0.55      0.88      0.68      1233
+
+    accuracy                           0.67      7180
+   macro avg       0.63      0.61      0.60      7180
+weighted avg       0.69      0.67      0.66      7180
+""")
 
 # showing Resnet-50 models and results
 resnet = load_trained_model('B/my_saved_model')
