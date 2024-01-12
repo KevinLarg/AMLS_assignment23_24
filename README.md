@@ -31,4 +31,6 @@ requirements.txt:
 12/01/24: Note that did try to clone the repository and run the code itself, yet get an error couldn't address:
 Cannot parse keras metadata at path A/my_saved_model\keras_metadata.pb: Received error: Error parsing message
 This maybe due to the auto-changing of Line Feed done by Git, changing the content of file metadata.pb
+
+Recommend to set the autocrlf to false, maybe helpful
 The main.py is working and loading fine in the prepared conda environment.
