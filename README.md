@@ -5,7 +5,7 @@ for each task 3 models, SVM, RF and a CNN is tried and had their performance eva
 
 Role of Each file:
 main.py:
-    contains the main working project;
+    contains the main working project, designed to present the results;
 
 .gitattributes:
     created for git large file storage lfs, for the trained Resnet model;
