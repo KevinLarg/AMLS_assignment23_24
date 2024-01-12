@@ -42,6 +42,7 @@ from tensorflow.keras.utils import to_categorical
 
 import warnings
 import joblib
+from sklearn.decomposition import PCA
 
 def load_data(datapath):
     """
@@ -103,7 +104,7 @@ def SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_t
             accuracy_results['C'].append(c)
             accuracy_results['accu'].append(accu_svm)
             accuracy_results['valscore'].append(val_scores.mean())
-
+            print(f"for SVM mdoel with a {i} kernel and c = {c},\n validaction acc is {val_scores.mean()}\n Test acc is {accu_svm}")
     return accuracy_results
 
 def load_trained_model(datapath):
@@ -166,6 +167,48 @@ def load_SVM(model_path,data_te,label_test):
     print(classification_report(label_test, y_pred))
     return
 
+def SVM_choose(data_tr,label_train,data_va,label_val,data_te,label_test):
+    """
+    Task B: please choose if 
+    0: results from testcode_B directly pasted and printed
+    1: train a new SVM with PCA """
+    choice = '0'
+    choice = input("Training a SVM for task B may take up to 25 mins.\n Please specify if you'd like to (1) train a new one or (0) see the printed result\n")
+    if choice == '0':
+        print("""Report for SVM with rbf kernal and regularization parameter = 1:
+              precision    recall  f1-score   support
+
+           0       0.94      0.91      0.93      1338
+           1       0.89      1.00      0.94       847
+           2       0.38      0.70      0.49       339
+           3       0.58      0.29      0.39       634
+           4       0.94      0.64      0.76      1035
+           5       0.48      0.50      0.49       592
+           6       0.33      0.19      0.24       741
+           7       0.66      0.40      0.50       421
+           8       0.55      0.88      0.68      1233
+
+    accuracy                           0.67      7180
+   macro avg       0.64      0.61      0.60      7180
+weighted avg       0.69      0.67      0.66      7180
+""")
+    else:
+        kernels = {'rbf'}
+        C = {100}
+        pca_used = PCA(n_components= 500) # more than 95% achieved by 500 PCs
+        data_tr_pca = pca_used.fit_transform(data_tr)
+        data_va_pca = pca_used.transform(data_va)
+        data_te_pca = pca_used.transform(data_te)
+        print("Training a rbf kernel SVM with c = 100, after PCA")
+        results = SVM_models(kernels, C, data_tr_pca,label_train,data_va_pca,label_val,data_te_pca,label_test)
+
+    return 
+
+
+
+
+
+
 # To ignore all warnings
 warnings.filterwarnings("ignore")
 random_seed = 42
@@ -187,8 +230,8 @@ test_reshaped = reshape_data(data_test)
 
 # showing SVM models and results
 # Tried kernals and regularization parameters
-kernels = {'linear', 'rbf', 'poly','sigmoid'}
-C = {0.1,1,10,100}
+kernels = ['linear', 'rbf', 'poly','sigmoid']
+C = [0.1,1,10,100,1000,10000]
 
 accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
 #print(f'Task A SVM results: {accuracy_results}')
@@ -226,29 +269,15 @@ label_test_one_hot = to_categorical(label_test, num_classes=9)
 
 # showing SVM models and results
 #load_SVM("B/svm.model", data_te, label_test)
-print("""Report for SVM with rbf kernal and regularization parameter = 1:
-              precision    recall  f1-score   support
-
-           0       0.94      0.91      0.93      1338
-           1       0.89      1.00      0.94       847
-           2       0.36      0.65      0.46       339
-           3       0.58      0.29      0.38       634
-           4       0.94      0.66      0.77      1035
-           5       0.45      0.48      0.47       592
-           6       0.32      0.18      0.23       741
-           7       0.68      0.40      0.50       421
-           8       0.55      0.88      0.68      1233
-
-    accuracy                           0.67      7180
-   macro avg       0.63      0.61      0.60      7180
-weighted avg       0.69      0.67      0.66      7180
-""")
+SVM_choose(data_tr,label_train,data_va,label_val,data_te,label_test)
 
 # showing Resnet-50 models and results
+print("Task B: Loading Resnet-50 model")
 resnet = load_trained_model('B/my_saved_model')
 test_loss, test_accuracy = resnet.evaluate(data_test_res, label_test_one_hot)
 print(f"Resnet-50: test accuracy is now {test_accuracy}")
+print("Task B: Resnet-50 model with the padded data achieved a test acc of 0.7798050045967102")
 
 # For saving time and repository space, the RF models for task B will be directly printed
-print("Task B: Random Forest model with mini-batches achieved a test acc of 0.5811977715877438")
+print("Task B: Random Forest model with mini-batches achieved a test acc of 0.5906685236768803")
 print("Task B: Random Forest model with the whole training data involved achieved a test acc of 0.6497214484679665")
