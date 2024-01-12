@@ -7,6 +7,9 @@ Role of Each file:
 main.py:
     contains the main working project, designed to present the results;
 
+Dataset folder:
+remained empty for pasting dataset files inside. expecting .npz files.
+
 .gitattributes:
     created for git large file storage lfs, for the trained Resnet model;
 
