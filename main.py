@@ -112,7 +112,9 @@ def load_trained_model(datapath):
         model_reload = load_model(filepath= datapath)
         print('Loading model; Success')
     except:
-        print('Loading model failed')
+        print('''Loading model failed; This is probably due to an OS error encountered at the last checking stage:
+              Cannot parse keras metadata at path A/my_saved_model\keras_metadata.pb: Received error: Error parsing message
+              ''')
     return model_reload
 
 def cnn_evaluate(CNN_A,test_reshaped, label_test):
@@ -233,7 +235,7 @@ test_reshaped = reshape_data(data_test)
 kernels = ['linear', 'rbf', 'poly','sigmoid']
 C = [0.1,1,10,100,1000,10000]
 
-accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
+#accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
 #print(f'Task A SVM results: {accuracy_results}')
 
 # Loading CNN model and show results
