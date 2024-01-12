@@ -235,7 +235,7 @@ test_reshaped = reshape_data(data_test)
 kernels = ['linear', 'rbf', 'poly','sigmoid']
 C = [0.1,1,10,100,1000,10000]
 
-#accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
+accuracy_results = SVM_models(kernels, C, data_tr,label_train,data_va,label_val,data_te,label_test)
 #print(f'Task A SVM results: {accuracy_results}')
 
 # Loading CNN model and show results
