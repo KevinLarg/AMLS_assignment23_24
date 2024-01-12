@@ -5,7 +5,7 @@ for each task 3 models, SVM, RF and a CNN is tried and had their performance eva
 
 Role of Each file:
 main.py:
-    contains the main working project;
+    contains the main working project, designed to present the results;
 
 .gitattributes:
     created for git large file storage lfs, for the trained Resnet model;
@@ -27,3 +27,7 @@ main.py:
 
 requirements.txt:
     provide a list of packages installed;
+
+12/01/24: Note that did try to clone the repository and run the code itself, yet get an error couldn't address:
+ERROR: Could not install packages due to an OSError: [Errno 2] No such file or directory: 'C:\\home\\conda\\feedstock_root\\build_artifacts\\asttokens_1698341106958\\work'
+when doing pip install; The main.py is working and loading fine in the prepared conda environment.
